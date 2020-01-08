@@ -90,7 +90,7 @@ func newTransactionManager(conf *Config, client Client) (*transactionManager, er
 
 	return txnmgr, nil
 }
-
+//message flow: asyncProducer->topicProducer->partitionProducer->brokerProducer->broker cluster
 type asyncProducer struct {
 	client Client
 	conf   *Config
@@ -382,6 +382,7 @@ func (p *asyncProducer) newTopicProducer(topic string) chan<- *ProducerMessage {
 }
 
 func (tp *topicProducer) dispatch() {
+	//Choose partition for all messages and new a partitionProducer for the messages that is belong to one partition.
 	for msg := range tp.input {
 		if msg.retries == 0 {
 			if err := tp.partitionMessage(msg); err != nil {
@@ -407,7 +408,7 @@ func (tp *topicProducer) dispatch() {
 		close(handler)
 	}
 }
-
+//Choose a partition
 func (tp *topicProducer) partitionMessage(msg *ProducerMessage) error {
 	var partitions []int32
 
