@@ -340,6 +340,7 @@ func (p *asyncProducer) dispatcher() {
 			continue
 		}
 
+	        //if the first , initialize it.
 		handler := handlers[msg.Topic]
 		if handler == nil {
 			handler = p.newTopicProducer(msg.Topic)
